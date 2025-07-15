@@ -45,7 +45,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions })
       <h3 className="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h3>
       <div className="space-y-4 max-h-96 overflow-y-auto">
         {transactions.map((transaction) => (
-          <div key={transaction.id} className="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div key={transaction.id} className="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:scale-[1.02]">
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center space-x-2">
                 {transaction.type === 'airtime' ? (

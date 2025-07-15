@@ -14,6 +14,7 @@ const BundleForm: React.FC<BundleFormProps> = ({ onTransaction }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedBundle, setSelectedBundle] = useState(bundleOptions[0]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +23,7 @@ const BundleForm: React.FC<BundleFormProps> = ({ onTransaction }) => {
     setIsProcessing(true);
     
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
     onTransaction({
       type: 'bundle',
@@ -34,7 +35,11 @@ const BundleForm: React.FC<BundleFormProps> = ({ onTransaction }) => {
     });
 
     setIsProcessing(false);
+    setShowSuccess(true);
     setPhoneNumber('');
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   return (
@@ -93,6 +98,15 @@ const BundleForm: React.FC<BundleFormProps> = ({ onTransaction }) => {
           </div>
           <p className="text-sm text-blue-600 mt-2">{selectedBundle.description}</p>
         </div>
+
+        {showSuccess && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center space-x-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span>Data bundle activated! {selectedBundle.size} sent to {phoneNumber}</span>
+          </div>
+        )}
 
         <button
           type="submit"

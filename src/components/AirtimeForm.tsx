@@ -15,6 +15,7 @@ const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
   const [amount, setAmount] = useState('');
   const [selectedTier, setSelectedTier] = useState(airtimeTiers[0]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const calculateDiscountedAmount = () => {
     const baseAmount = parseFloat(amount) || 0;
@@ -29,7 +30,7 @@ const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
     setIsProcessing(true);
     
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
     onTransaction({
       type: 'airtime',
@@ -41,8 +42,12 @@ const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
     });
 
     setIsProcessing(false);
+    setShowSuccess(true);
     setPhoneNumber('');
     setAmount('');
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   return (
@@ -114,6 +119,15 @@ const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
               <span className="text-gray-800 font-semibold">You Pay:</span>
               <span className="text-green-600 font-bold text-lg">₦{calculateDiscountedAmount().toFixed(2)}</span>
             </div>
+          </div>
+        )}
+
+        {showSuccess && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center space-x-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span>Airtime purchase successful! ₦{calculateDiscountedAmount().toFixed(2)} credited to {phoneNumber}</span>
           </div>
         )}
 

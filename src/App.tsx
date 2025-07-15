@@ -5,10 +5,12 @@ import AirtimeForm from './components/AirtimeForm';
 import BundleForm from './components/BundleForm';
 import TransactionHistory from './components/TransactionHistory';
 import { Transaction } from './types';
+import { bundleOptions } from './data/bundles';
 
 function App() {
   const [activeService, setActiveService] = useState<'airtime' | 'bundle'>('airtime');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [totalSavings, setTotalSavings] = useState(0);
 
   const addTransaction = (transaction: Omit<Transaction, 'id' | 'timestamp'>) => {
     const newTransaction: Transaction = {
@@ -17,6 +19,17 @@ function App() {
       timestamp: new Date()
     };
     setTransactions(prev => [newTransaction, ...prev]);
+    
+    // Calculate savings for demo
+    if (transaction.type === 'airtime') {
+      const originalAmount = transaction.amount / (1 - (transaction.tier === 'Basic' ? 0.02 : transaction.tier === 'Premium' ? 0.05 : 0.08));
+      setTotalSavings(prev => prev + (originalAmount - transaction.amount));
+    } else {
+      const bundle = bundleOptions.find(b => b.size === transaction.bundleSize);
+      if (bundle) {
+        setTotalSavings(prev => prev + (bundle.originalPrice - bundle.discountedPrice));
+      }
+    }
   };
 
   return (
@@ -31,6 +44,11 @@ function App() {
           <p className="text-gray-600 text-lg">
             Purchase airtime and data bundles at unbeatable prices
           </p>
+          {totalSavings > 0 && (
+            <div className="mt-4 inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full">
+              <span className="font-semibold">Total Savings: ₦{totalSavings.toFixed(2)}</span>
+            </div>
+          )}
         </div>
 
         <ServiceSelector 

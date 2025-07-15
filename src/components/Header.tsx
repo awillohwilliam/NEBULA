@@ -31,8 +31,9 @@ const Header: React.FC = () => {
             <div className="flex items-center space-x-2">
               <button className="p-2 text-gray-600 hover:text-purple-600 transition-colors">
                 <Bell className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-              <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+              <button className="relative flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
                 <User className="w-4 h-4" />
                 <span className="hidden sm:inline">Account</span>
               </button>
