@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Phone, CreditCard, Zap } from 'lucide-react';
 import NetworkSelector from './NetworkSelector';
 import TierSelector from './TierSelector';
+import PhoneNumberValidator from './PhoneNumberValidator';
 import { Transaction } from '../types';
 import { airtimeTiers } from '../data/tiers';
+import { useTransactions } from '../hooks/useTransactions';
 
 interface AirtimeFormProps {
-  onTransaction: (transaction: Omit<Transaction, 'id' | 'timestamp'>) => void;
+  onTransaction?: (transaction: Omit<Transaction, 'id' | 'timestamp'>) => void;
 }
 
 const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
@@ -14,8 +16,11 @@ const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [amount, setAmount] = useState('');
   const [selectedTier, setSelectedTier] = useState(airtimeTiers[0]);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
+  const [phoneCarrier, setPhoneCarrier] = useState('');
+  
+  const { purchaseAirtime, isPurchasingAirtime } = useTransactions();
 
   const calculateDiscountedAmount = () => {
     const baseAmount = parseFloat(amount) || 0;
@@ -25,29 +30,27 @@ const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedNetwork || !phoneNumber || !amount) return;
+    if (!selectedNetwork || !phoneNumber || !amount || !isPhoneValid) return;
 
-    setIsProcessing(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    onTransaction({
-      type: 'airtime',
+    purchaseAirtime({
       network: selectedNetwork,
       phoneNumber,
       amount: calculateDiscountedAmount(),
       tier: selectedTier.name,
-      status: 'completed'
     });
 
-    setIsProcessing(false);
     setShowSuccess(true);
     setPhoneNumber('');
     setAmount('');
+    setIsPhoneValid(false);
     
     // Hide success message after 3 seconds
     setTimeout(() => setShowSuccess(false), 3000);
+  };
+
+  const handlePhoneValidation = (valid: boolean, carrier?: string) => {
+    setIsPhoneValid(valid);
+    setPhoneCarrier(carrier || '');
   };
 
   return (
@@ -85,6 +88,16 @@ const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
             required
           />
+          <PhoneNumberValidator
+            phoneNumber={phoneNumber}
+            selectedNetwork={selectedNetwork}
+            onValidationChange={handlePhoneValidation}
+          />
+          {phoneCarrier && phoneCarrier !== selectedNetwork && (
+            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-700">
+              Warning: Phone number belongs to {phoneCarrier}, but {selectedNetwork} is selected
+            </div>
+          )}
         </div>
 
         <div>
@@ -133,10 +146,10 @@ const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
 
         <button
           type="submit"
-          disabled={isProcessing || !selectedNetwork || !phoneNumber || !amount}
+          disabled={isPurchasingAirtime || !selectedNetwork || !phoneNumber || !amount || !isPhoneValid}
           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2"
         >
-          {isProcessing ? (
+          {isPurchasingAirtime ? (
             <>
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
               <span>Processing...</span>

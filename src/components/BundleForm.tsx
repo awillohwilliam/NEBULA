@@ -2,44 +2,46 @@ import React, { useState } from 'react';
 import { Wifi, CreditCard } from 'lucide-react';
 import NetworkSelector from './NetworkSelector';
 import BundleSelector from './BundleSelector';
+import PhoneNumberValidator from './PhoneNumberValidator';
 import { Transaction } from '../types';
 import { bundleOptions } from '../data/bundles';
+import { useTransactions } from '../hooks/useTransactions';
 
 interface BundleFormProps {
-  onTransaction: (transaction: Omit<Transaction, 'id' | 'timestamp'>) => void;
+  onTransaction?: (transaction: Omit<Transaction, 'id' | 'timestamp'>) => void;
 }
 
 const BundleForm: React.FC<BundleFormProps> = ({ onTransaction }) => {
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedBundle, setSelectedBundle] = useState(bundleOptions[0]);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
+  const [phoneCarrier, setPhoneCarrier] = useState('');
+  
+  const { purchaseBundle, isPurchasingBundle } = useTransactions();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedNetwork || !phoneNumber) return;
+    if (!selectedNetwork || !phoneNumber || !isPhoneValid) return;
 
-    setIsProcessing(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    onTransaction({
-      type: 'bundle',
+    purchaseBundle({
       network: selectedNetwork,
       phoneNumber,
-      amount: selectedBundle.discountedPrice,
-      bundleSize: selectedBundle.size,
-      status: 'completed'
+      bundleId: selectedBundle.id,
     });
 
-    setIsProcessing(false);
     setShowSuccess(true);
     setPhoneNumber('');
+    setIsPhoneValid(false);
     
     // Hide success message after 3 seconds
     setTimeout(() => setShowSuccess(false), 3000);
+  };
+
+  const handlePhoneValidation = (valid: boolean, carrier?: string) => {
+    setIsPhoneValid(valid);
+    setPhoneCarrier(carrier || '');
   };
 
   return (
@@ -77,6 +79,16 @@ const BundleForm: React.FC<BundleFormProps> = ({ onTransaction }) => {
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             required
           />
+          <PhoneNumberValidator
+            phoneNumber={phoneNumber}
+            selectedNetwork={selectedNetwork}
+            onValidationChange={handlePhoneValidation}
+          />
+          {phoneCarrier && phoneCarrier !== selectedNetwork && (
+            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-700">
+              Warning: Phone number belongs to {phoneCarrier}, but {selectedNetwork} is selected
+            </div>
+          )}
         </div>
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -110,10 +122,10 @@ const BundleForm: React.FC<BundleFormProps> = ({ onTransaction }) => {
 
         <button
           type="submit"
-          disabled={isProcessing || !selectedNetwork || !phoneNumber}
+          disabled={isPurchasingBundle || !selectedNetwork || !phoneNumber || !isPhoneValid}
           className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2"
         >
-          {isProcessing ? (
+          {isPurchasingBundle ? (
             <>
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
               <span>Processing...</span>
