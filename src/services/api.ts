@@ -3,7 +3,7 @@ import { mockApiService } from '../utils/mockApi';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api',
+  baseURL: import.meta.env.VITE_REACT_APP_API_BASE_URL || 'http://localhost:3001/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ export const apiService = {
   // Airtime Services
   purchaseAirtime: async (data: AirtimePurchaseRequest): Promise<TransactionResponse> => {
     // Use mock API in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       return mockApiService.purchaseAirtime(data);
     }
     const response = await api.post('/airtime/purchase', data);
@@ -77,7 +77,7 @@ export const apiService = {
   // Bundle Services
   purchaseBundle: async (data: BundlePurchaseRequest): Promise<TransactionResponse> => {
     // Use mock API in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       return mockApiService.purchaseBundle(data);
     }
     const response = await api.post('/bundles/purchase', data);
@@ -87,7 +87,7 @@ export const apiService = {
   // Network Services
   getNetworkBalances: async (): Promise<NetworkBalance[]> => {
     // Use mock API in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       return mockApiService.getNetworkBalances();
     }
     const response = await api.get('/networks/balances');
@@ -96,7 +96,7 @@ export const apiService = {
 
   verifyPhoneNumber: async (phoneNumber: string, network: string): Promise<{ valid: boolean; carrier: string }> => {
     // Use mock API in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       return mockApiService.verifyPhoneNumber(phoneNumber, network);
     }
     const response = await api.post('/verify/phone', { phoneNumber, network });
@@ -106,7 +106,7 @@ export const apiService = {
   // Transaction Services
   getTransactionHistory: async (page = 1, limit = 10) => {
     // Use mock API in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       return mockApiService.getTransactionHistory();
     }
     const response = await api.get(`/transactions?page=${page}&limit=${limit}`);
@@ -121,7 +121,7 @@ export const apiService = {
   // Pricing Services
   getCurrentPricing: async () => {
     // Use mock API in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       return mockApiService.getCurrentPricing();
     }
     const response = await api.get('/pricing/current');
