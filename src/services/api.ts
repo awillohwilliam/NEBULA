@@ -41,6 +41,7 @@ export interface AirtimePurchaseRequest {
   phoneNumber: string;
   amount: number;
   network: string;
+  tier?: string;
 }
 
 export interface BundlePurchaseRequest {

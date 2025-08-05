@@ -41,6 +41,11 @@ export const useTransactions = () => {
           type: 'success',
           message: `₦${variables.amount} airtime sent to ${variables.phoneNumber}`,
         });
+        
+        // Calculate and update savings
+        const originalAmount = variables.amount / (1 - (variables.tier === 'basic' ? 0.02 : variables.tier === 'premium' ? 0.05 : 0.08));
+        const savings = originalAmount - variables.amount;
+        updateTotalSavings(savings);
       } else {
         toast.info('Transaction is being processed...');
       }

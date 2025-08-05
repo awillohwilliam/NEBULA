@@ -23,6 +23,7 @@ export const mockApiService = {
       message: 'Airtime purchase successful',
       amount: data.amount,
       recipient: data.phoneNumber,
+      tier: data.tier,
     };
   },
 

@@ -36,7 +36,7 @@ const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
       network: selectedNetwork,
       phoneNumber,
       amount: calculateDiscountedAmount(),
-      tier: selectedTier.name,
+      tier: selectedTier.id,
     });
 
     setShowSuccess(true);
