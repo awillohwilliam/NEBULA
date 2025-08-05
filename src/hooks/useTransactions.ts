@@ -22,12 +22,17 @@ export const useTransactions = () => {
   const purchaseAirtimeMutation = useMutation({
     mutationFn: (data: AirtimePurchaseRequest) => apiService.purchaseAirtime(data),
     onSuccess: (response, variables) => {
+      // Calculate discounted amount
+      const tierDiscounts = { basic: 0.02, premium: 0.05, vip: 0.08 };
+      const discount = tierDiscounts[variables.tier as keyof typeof tierDiscounts] || 0.02;
+      const discountedAmount = variables.amount * (1 - discount);
+      
       const transaction = {
         id: response.id,
         type: 'airtime' as const,
         network: variables.network,
         phoneNumber: variables.phoneNumber,
-        amount: variables.amount,
+        amount: discountedAmount,
         tier: variables.tier,
         status: response.status === 'success' ? 'completed' as const : 'pending' as const,
         timestamp: new Date(),
@@ -36,15 +41,14 @@ export const useTransactions = () => {
       addTransaction(transaction);
       
       if (response.status === 'success') {
-        toast.success(`Airtime purchase successful! ₦${variables.amount} sent to ${variables.phoneNumber}`);
+        toast.success(`Airtime purchase successful! ₦${discountedAmount.toFixed(2)} sent to ${variables.phoneNumber}`);
         addNotification({
           type: 'success',
-          message: `₦${variables.amount} airtime sent to ${variables.phoneNumber}`,
+          message: `₦${discountedAmount.toFixed(2)} airtime sent to ${variables.phoneNumber}`,
         });
         
         // Calculate and update savings
-        const originalAmount = variables.amount / (1 - (variables.tier === 'basic' ? 0.02 : variables.tier === 'premium' ? 0.05 : 0.08));
-        const savings = originalAmount - variables.amount;
+        const savings = variables.amount - discountedAmount;
         updateTotalSavings(savings);
       } else {
         toast.info('Transaction is being processed...');

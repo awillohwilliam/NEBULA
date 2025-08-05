@@ -9,6 +9,8 @@ export const mockApiService = {
   purchaseAirtime: async (data: AirtimePurchaseRequest): Promise<TransactionResponse> => {
     await delay(1500); // Simulate network delay
     
+    console.log('Processing airtime purchase:', data);
+    
     // Simulate occasional failures for testing
     const shouldFail = Math.random() < 0.1; // 10% failure rate
     
@@ -16,12 +18,17 @@ export const mockApiService = {
       throw new Error('Network error: Unable to process transaction');
     }
     
+    // Calculate discounted amount based on tier
+    const tierDiscounts = { basic: 0.02, premium: 0.05, vip: 0.08 };
+    const discount = tierDiscounts[data.tier as keyof typeof tierDiscounts] || 0.02;
+    const discountedAmount = data.amount * (1 - discount);
+    
     return {
       id: generateTransactionId(),
       reference: `AIR${Date.now()}`,
       status: Math.random() < 0.9 ? 'success' : 'pending', // 90% success rate
       message: 'Airtime purchase successful',
-      amount: data.amount,
+      amount: discountedAmount,
       recipient: data.phoneNumber,
       tier: data.tier,
     };

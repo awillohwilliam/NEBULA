@@ -41,7 +41,7 @@ export interface AirtimePurchaseRequest {
   phoneNumber: string;
   amount: number;
   network: string;
-  tier?: string;
+  tier: string;
 }
 
 export interface BundlePurchaseRequest {
@@ -51,10 +51,13 @@ export interface BundlePurchaseRequest {
 }
 
 export interface TransactionResponse {
-  success: boolean;
-  transactionId: string;
+  id: string;
+  reference: string;
+  status: 'success' | 'pending' | 'failed';
   message: string;
-  balance?: number;
+  amount: number;
+  recipient: string;
+  tier?: string;
 }
 
 export interface NetworkBalance {

@@ -30,22 +30,33 @@ const AirtimeForm: React.FC<AirtimeFormProps> = ({ onTransaction }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedNetwork || !phoneNumber || !amount || !isPhoneValid) return;
+    
+    // Validate all required fields
+    if (!selectedNetwork || !phoneNumber || !amount || !isPhoneValid) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    const numericAmount = parseFloat(amount);
+    if (numericAmount < selectedTier.minAmount) {
+      toast.error(`Minimum amount for ${selectedTier.name} tier is ₦${selectedTier.minAmount}`);
+      return;
+    }
 
     purchaseAirtime({
       network: selectedNetwork,
       phoneNumber,
-      amount: calculateDiscountedAmount(),
+      amount: numericAmount,
       tier: selectedTier.id,
     });
 
-    setShowSuccess(true);
-    setPhoneNumber('');
-    setAmount('');
-    setIsPhoneValid(false);
-    
-    // Hide success message after 3 seconds
-    setTimeout(() => setShowSuccess(false), 3000);
+    // Reset form on successful submission
+    setTimeout(() => {
+      setPhoneNumber('');
+      setAmount('');
+      setIsPhoneValid(false);
+      setPhoneCarrier('');
+    }, 1000);
   };
 
   const handlePhoneValidation = (valid: boolean, carrier?: string) => {
