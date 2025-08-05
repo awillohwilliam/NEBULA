@@ -2,13 +2,16 @@ import React from 'react';
 import { Smartphone, Wifi, User, Bell } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import NetworkStatus from './NetworkStatus';
+import ProfileModal from './ProfileModal';
 
 const Header: React.FC = () => {
   const { user, notifications } = useStore();
   const unreadCount = notifications.length;
+  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+    <>
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -46,7 +49,10 @@ const Header: React.FC = () => {
                   </span>
                 )}
               </button>
-              <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+              <button 
+                onClick={() => setIsProfileOpen(true)}
+                className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+              >
                 <User className="w-4 h-4" />
                 <span className="hidden sm:inline">
                   {user ? user.name : 'Account'}
@@ -56,7 +62,13 @@ const Header: React.FC = () => {
           </div>
         </div>
       </div>
-    </header>
+      </header>
+      
+      <ProfileModal 
+        isOpen={isProfileOpen} 
+        onClose={() => setIsProfileOpen(false)} 
+      />
+    </>
   );
 };
 

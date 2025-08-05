@@ -68,6 +68,21 @@ export const useStore = create<AppState>()(
         set((state) => ({
           transactions: [newTransaction, ...state.transactions],
         }));
+        
+        // Initialize user if not exists
+        if (!get().user) {
+          set({
+            user: {
+              id: 'user-1',
+              email: 'user@example.com',
+              name: 'John Doe',
+              phoneNumber: '08012345678',
+              balance: 5000,
+              tier: 'basic',
+            },
+            isAuthenticated: true,
+          });
+        }
       },
       
       setActiveService: (activeService) => set({ activeService }),
