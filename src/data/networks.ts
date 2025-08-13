@@ -24,5 +24,11 @@ export const networkProviders: NetworkProvider[] = [
     name: '9mobile',
     logo: '/9mobile-logo.png',
     color: 'emerald'
+  },
+  {
+    id: 'safaricom',
+    name: 'Safaricom',
+    logo: '/safaricom-logo.png',
+    color: 'green'
   }
 ];
