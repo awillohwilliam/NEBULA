@@ -56,5 +56,11 @@ export default {
     'hover:border-emerald-300',
     'bg-emerald-100',
     'text-emerald-600',
+    'border-blue-500',
+    'bg-blue-50',
+    'text-blue-700',
+    'hover:border-blue-300',
+    'bg-blue-100',
+    'text-blue-600',
   ]
 }
