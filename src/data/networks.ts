@@ -30,5 +30,11 @@ export const networkProviders: NetworkProvider[] = [
     name: 'Safaricom',
     logo: '/safaricom-logo.png',
     color: 'green'
+  },
+  {
+    id: 'telcom',
+    name: 'Telcom',
+    logo: '/telcom-logo.png',
+    color: 'blue'
   }
 ];
