@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Phone, CreditCard, Zap } from 'lucide-react';
+import toast from 'react-hot-toast';
 import NetworkSelector from './NetworkSelector';
 import TierSelector from './TierSelector';
 import PhoneNumberValidator from './PhoneNumberValidator';

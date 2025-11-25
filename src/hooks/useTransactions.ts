@@ -57,7 +57,7 @@ export const useTransactions = () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to purchase airtime';
+      const message = error.message || error.response?.data?.message || 'Failed to purchase airtime';
       toast.error(message);
       addNotification({
         type: 'error',
@@ -96,7 +96,7 @@ export const useTransactions = () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to purchase data bundle';
+      const message = error.message || error.response?.data?.message || 'Failed to purchase data bundle';
       toast.error(message);
       addNotification({
         type: 'error',

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { mockApiService } from '../utils/mockApi';
+import { supabaseApiService } from './supabaseApi';
 
 // Create axios instance with base configuration
 const api = axios.create({
@@ -70,22 +71,14 @@ export interface NetworkBalance {
 export const apiService = {
   // Airtime Services
   purchaseAirtime: async (data: AirtimePurchaseRequest): Promise<TransactionResponse> => {
-    // Use mock API in development
-    if (import.meta.env.DEV) {
-      return mockApiService.purchaseAirtime(data);
-    }
-    const response = await api.post('/airtime/purchase', data);
-    return response.data;
+    // Use Supabase API
+    return supabaseApiService.purchaseAirtime(data);
   },
 
   // Bundle Services
   purchaseBundle: async (data: BundlePurchaseRequest): Promise<TransactionResponse> => {
-    // Use mock API in development
-    if (import.meta.env.DEV) {
-      return mockApiService.purchaseBundle(data);
-    }
-    const response = await api.post('/bundles/purchase', data);
-    return response.data;
+    // Use Supabase API
+    return supabaseApiService.purchaseBundle(data);
   },
 
   // Network Services
@@ -109,12 +102,8 @@ export const apiService = {
 
   // Transaction Services
   getTransactionHistory: async (page = 1, limit = 10) => {
-    // Use mock API in development
-    if (import.meta.env.DEV) {
-      return mockApiService.getTransactionHistory();
-    }
-    const response = await api.get(`/transactions?page=${page}&limit=${limit}`);
-    return response.data;
+    // Use Supabase API
+    return supabaseApiService.getTransactionHistory();
   },
 
   getTransactionStatus: async (transactionId: string) => {
